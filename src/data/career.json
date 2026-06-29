@@ -1,0 +1,463 @@
+{
+  "name": "Brian Dear",
+  "email": "superacidjax@me.com",
+  "linkedin": "https://www.linkedin.com/in/briandear/",
+  "github": "https://github.com/superacidjax",
+  "headline": "Senior Engineer & AI/ML Engineering Leader",
+  "tagline": "Don't read Brian's resume. Query it.",
+  "privacy_note": "This MCP server is grounded in Brian Dear's provided career data. It avoids private phone information and does not invent claims. If a question is not answered by the data, it says so and suggests asking Brian directly.",
+  "positioning": [
+    "Senior Rails/product/platform/AI engineering leader",
+    "Founder of iCouch, an early browser-based online therapy platform",
+    "Apple software engineer and engineering project manager",
+    "Built Rails software for AI/ML human evaluation workflows",
+    "Built RAG and internal documentation search tools",
+    "Led CI/CD and developer productivity work including a 90% build-time reduction at Apple",
+    "Experienced in regulated systems across mental health, insurance, government benefits, and fintech",
+    "Comfortable connecting product judgment, architecture, execution, and team leadership"
+  ],
+  "best_fit_roles": [
+    "Staff Rails Engineer",
+    "Principal Rails Engineer",
+    "AI Platform Engineer",
+    "AI Product Engineer",
+    "Product Engineering Lead",
+    "Engineering Manager",
+    "Director of Engineering",
+    "VP Engineering",
+    "Platform Engineering Lead",
+    "Healthcare Technology Engineering Lead",
+    "Founder-minded technical leader",
+    "Internal tools and developer productivity leader"
+  ],
+  "public_links": [
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/briandear/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/superacidjax"
+    },
+    {
+      "label": "Wired article on iCouch",
+      "url": "https://www.wired.com/2012/12/virtual-therapy/"
+    }
+  ],
+  "skills": {
+    "languages_and_frameworks": [
+      "Ruby",
+      "Ruby on Rails",
+      "TypeScript",
+      "React",
+      "Python",
+      "Swift",
+      "REST APIs",
+      "GraphQL APIs"
+    ],
+    "data_and_ai": [
+      "RAG",
+      "LLM integration",
+      "OpenAI",
+      "Gemini",
+      "open-source models",
+      "AI eval workflows",
+      "ML-driven analytics",
+      "PostgreSQL",
+      "MySQL",
+      "Redis",
+      "DynamoDB",
+      "Kafka",
+      "Snowflake",
+      "PGVector",
+      "Claude Code",
+      "Codex",
+      "Ollama",
+      "MCP servers",
+      "agentic AI applications"
+    ],
+    "platform_and_ops": [
+      "AWS",
+      "Kubernetes",
+      "Docker",
+      "CircleCI",
+      "Jenkins",
+      "GitHub Actions",
+      "Datadog",
+      "PagerDuty",
+      "blue-green deployment",
+      "CI/CD",
+      "release engineering",
+      "incident response"
+    ],
+    "leadership_and_product": [
+      "product engineering leadership",
+      "architectural roadmaps",
+      "remote team leadership",
+      "hiring",
+      "mentoring",
+      "stakeholder alignment",
+      "requirements discovery",
+      "roadmap delivery",
+      "analytics-informed delivery"
+    ],
+    "domains": [
+      "AI/ML human evaluation",
+      "healthcare",
+      "mental health",
+      "fintech",
+      "insurance",
+      "government benefits",
+      "regulated systems",
+      "B2B applications",
+      "B2C applications",
+      "internal tools",
+      "developer productivity"
+    ]
+  },
+  "experience": [
+    {
+      "company": "Maryland Department of Labor",
+      "title": "Senior Lead Software Engineer",
+      "start": "Apr 2025",
+      "end": "Present",
+      "highlights": [
+        "Led an engineering and product team creating a greenfield application for the Maryland Paid Family and Medical Leave program.",
+        "Managed technical requirements and stakeholder relationships with senior State of Maryland leadership for compliance, customer experience, and financial processes.",
+        "Designed scalable architecture integrating Salesforce, NetSuite, and Login.gov.",
+        "Worked in modern Ruby, Ruby on Rails, and PostgreSQL while shaping style guides, CI/CD pipelines, and code review practice."
+      ]
+    },
+    {
+      "company": "Grid Dynamics, contracted to Apple AI/ML Human Evaluation Platform",
+      "title": "Senior Software Engineer",
+      "start": "Apr 2023",
+      "end": "Apr 2025",
+      "highlights": [
+        "Delivered and improved Ruby on Rails software for Apple's AI/ML human evaluation platform supporting high-visibility services including the App Store, Apple Music, Apple TV, Podcasts, and Fitness+.",
+        "Improved scoring workflows, performance, and feature delivery for systems serving tens of thousands of simultaneous users in a high-scrutiny production environment.",
+        "Built a Rails-based RAG application for documentation search and onboarding.",
+        "Contributed Python and Swift where needed for ML-related work.",
+        "Built React micro-frontends and data-heavy UX integrated with multiple data sources in support of the Apple Data Platform."
+      ]
+    },
+    {
+      "company": "Independent Consultant",
+      "title": "Lead Engineering Consultant",
+      "start": "Apr 2023",
+      "end": "Apr 2024",
+      "highlights": [
+        "Led architecture and delivery for B2B and B2C Rails applications across multiple client engagements.",
+        "Modernized legacy Rails estates at Medical Mutual of Ohio and 3M.",
+        "Upgraded frameworks and runtimes, stabilized dependencies, and introduced Kubernetes and blue-green deployment patterns.",
+        "Supported Best Buy migrations to AWS and Kubernetes.",
+        "Built event-driven systems with Kafka, Snowflake, and RudderStack and delivered integrations with Salesforce, HubSpot, and NetSuite."
+      ]
+    },
+    {
+      "company": "Beyond Finance",
+      "title": "Engineering Manager",
+      "start": "Jan 2022",
+      "end": "Jun 2023",
+      "highlights": [
+        "Led roadmap delivery for creditor-facing negotiation operations in a regulated fintech environment.",
+        "Managed engineers, mentored growth, and aligned technical plans with business goals.",
+        "Built internal APIs, asynchronous services, and third-party integrations with Ruby on Rails, PostgreSQL, and AWS.",
+        "Established operational rigor with Datadog dashboards, PagerDuty on-call workflows, recruiting, code review discipline, and post-deployment health metrics."
+      ]
+    },
+    {
+      "company": "Apple",
+      "title": "Senior Software Engineer IV & Engineering Project Manager",
+      "start": "Feb 2017",
+      "end": "Jan 2022",
+      "highlights": [
+        "Led migration of source-control workflows from SVN to GitHub across Final Cut Pro, Logic Pro, iMovie, Clips, and GarageBand.",
+        "Built a Kubernetes-based distributed compilation system using a distributed C compiler modified to work with Swift and Objective-C.",
+        "Developed custom Ruby-based CI/CD orchestration tooling that cut build times by 90% for creative applications.",
+        "Managed build and release operations across iOS, macOS, watchOS, visionOS, and Apple Silicon transition efforts.",
+        "Developed ML-driven analytics to predict build failures and improve reliability."
+      ]
+    },
+    {
+      "company": "iCouch",
+      "title": "Founder & Product Engineering Lead",
+      "start": "Apr 2010",
+      "end": "May 2020",
+      "highlights": [
+        "Built a mental health startup at the intersection of product, engineering, and care experience.",
+        "Founded and built an early browser-based online therapy platform before telehealth was widely accepted.",
+        "Created the Ruby on Rails application and integrated WebRTC technologies for secure peer-to-peer video and chat.",
+        "Owned product direction, software architecture, customer development, support, sales, and engineering.",
+        "The company was later acquired by Modern Health Canada."
+      ]
+    },
+    {
+      "company": "4810 Consulting Ltd.",
+      "title": "Lead Contracting Software Engineer",
+      "start": "2015",
+      "end": "2017",
+      "highlights": [
+        "Led teams of 2 to 25 delivering full-stack Ruby on Rails applications and APIs for clients including Rosetta Stone, Finalsite, Matalan Direct, Sonic Healthcare, and startups.",
+        "Established CI/CD pipelines, agile delivery practices, and maintainable Rails conventions."
+      ]
+    },
+    {
+      "company": "Take the Interview, Inc.",
+      "title": "Lead Software Engineer",
+      "start": "2012",
+      "end": "2015",
+      "highlights": [
+        "Helped scale an HR-tech company from seed stage through Series B.",
+        "Built a fully remote team of 15 across engineering, design, and QA.",
+        "Architected Ruby on Rails backend systems for synchronous and asynchronous video interviewing and analytics products supporting native iOS and Android apps."
+      ]
+    },
+    {
+      "company": "The American College of the Mediterranean",
+      "title": "Adjunct Professor of Economics and Management",
+      "start": "2024",
+      "end": "2026",
+      "highlights": [
+        "Taught economics and management, adding a teaching and communication dimension to Brian's leadership profile."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "iCouch",
+      "themes": [
+        "healthcare",
+        "startup",
+        "regulated_systems",
+        "product_engineering"
+      ],
+      "summary": "Founded and built an early browser-based online therapy platform in 2010.",
+      "context": "Mental health care was not yet broadly online. iCouch had to make sensitive patient/provider workflows feel usable, safe, and credible.",
+      "role": "Founder and product engineering lead.",
+      "contributions": [
+        "Built scheduling, payments, clinician workflows, and privacy-sensitive patient/provider interactions.",
+        "Created the Ruby on Rails application and integrated WebRTC technologies for secure peer-to-peer video and chat.",
+        "Handled product direction, software architecture, customer development, support, sales, and engineering."
+      ],
+      "impact": "Helped therapists provide online care before the category became mainstream. iCouch was later acquired by Modern Health Canada.",
+      "interview_angle": "Brian saw a real human workflow before it was fashionable, built the product, learned the market, and kept trust at the center."
+    },
+    {
+      "name": "Apple AI/ML Human Evaluation Platform",
+      "themes": ["ai", "rails", "platform", "developer_productivity"],
+      "summary": "Built Rails software supporting AI/ML human evaluation workflows for high-visibility Apple services.",
+      "context": "AI quality depends on structured human evaluation, scoring, review workflows, and tooling that can handle scrutiny and scale.",
+      "role": "Senior software engineer contracted through Grid Dynamics.",
+      "contributions": [
+        "Improved scoring workflows, performance, and feature delivery.",
+        "Built Rails-based internal tooling and a RAG documentation search/onboarding application.",
+        "Contributed Python and Swift where needed for ML-related work."
+      ],
+      "impact": "Supported high-scrutiny AI evaluation workflows for Apple services including the App Store, Apple Music, Apple TV, Podcasts, and Fitness+.",
+      "interview_angle": "Brian can talk about AI beyond model demos: evals, human review, data quality, internal tooling, and the unglamorous systems that make AI useful."
+    },
+    {
+      "name": "Apple Developer Productivity and CI/CD",
+      "themes": ["platform", "developer_productivity", "leadership"],
+      "summary": "Worked on build and release infrastructure across major Apple creative applications.",
+      "context": "Large creative apps have complex build pipelines, platform transitions, and many teams depending on reliable release infrastructure.",
+      "role": "Senior Software Engineer IV and Engineering Project Manager.",
+      "contributions": [
+        "Led source-control modernization from SVN to GitHub.",
+        "Built Ruby-based CI/CD orchestration tooling.",
+        "Built a Kubernetes-based distributed compilation system using a distributed C compiler modified to work with Swift and Objective-C.",
+        "Managed build and release operations across iOS, macOS, watchOS, visionOS, and Apple Silicon transition efforts."
+      ],
+      "impact": "Reduced build times by 90% for Apple creative applications.",
+      "interview_angle": "This is the platform story: Brian found leverage in developer workflow, not just application code."
+    },
+    {
+      "name": "Apple Data Platform UX",
+      "themes": ["ai", "platform", "developer_productivity"],
+      "summary": "Built React micro-frontends and data-heavy UX integrated with multiple data sources in support of the Apple Data Platform.",
+      "context": "Internal data products need to make complex datasets usable for real teams, not just technically available.",
+      "role": "Senior software engineer.",
+      "contributions": [
+        "Implemented React micro-frontends.",
+        "Integrated UI surfaces with multiple data sources.",
+        "Worked across product, data, and engineering concerns."
+      ],
+      "impact": "Improved data-heavy internal workflows for Apple teams.",
+      "interview_angle": "Brian can bridge backend depth, frontend clarity, and product usefulness in data-heavy environments."
+    },
+    {
+      "name": "Maryland Paid Family and Medical Leave Platform",
+      "themes": ["rails", "platform", "regulated_systems", "leadership"],
+      "summary": "Led engineering and product work for a greenfield government benefits application.",
+      "context": "State benefits software has to be reliable, compliant, understandable, and integrated with large external systems.",
+      "role": "Senior lead software engineer.",
+      "contributions": [
+        "Led engineering and product team execution.",
+        "Managed senior stakeholder relationships for compliance, customer experience, and financial process concerns.",
+        "Designed scalable architecture integrating Salesforce, NetSuite, and Login.gov.",
+        "Coded in modern Ruby, Rails, and PostgreSQL while shaping style guides, CI/CD, and review practices."
+      ],
+      "impact": "Helped move a complex public-sector benefits workflow toward a scalable production application.",
+      "interview_angle": "Brian can run the room with stakeholders and still get into the code."
+    },
+    {
+      "name": "Beyond Finance Operations Platform",
+      "themes": ["rails", "platform", "regulated_systems", "leadership"],
+      "summary": "Led roadmap delivery for creditor-facing negotiation operations in regulated fintech.",
+      "context": "Fintech operations require internal tools, auditability, reliability, and coordination across business and engineering.",
+      "role": "Engineering manager.",
+      "contributions": [
+        "Managed engineers and mentored growth.",
+        "Built internal APIs, asynchronous services, and third-party integrations with Ruby on Rails, PostgreSQL, and AWS.",
+        "Partnered with DevOps on CircleCI and Jenkins delivery pipelines.",
+        "Established Datadog dashboards, PagerDuty workflows, code review discipline, and post-deployment health metrics."
+      ],
+      "impact": "Improved operational rigor and delivery for regulated fintech workflows.",
+      "interview_angle": "Brian understands that leadership is a system: people, process, observability, and code all have to line up."
+    },
+    {
+      "name": "Rails Modernization Consulting",
+      "themes": [
+        "rails",
+        "platform",
+        "regulated_systems",
+        "developer_productivity"
+      ],
+      "summary": "Modernized legacy Rails estates and cloud delivery patterns for enterprise clients.",
+      "context": "Legacy Rails systems can carry business-critical workflows while needing runtime upgrades, dependency stabilization, safer deployments, and cloud migration.",
+      "role": "Lead engineering consultant.",
+      "contributions": [
+        "Led architecture and delivery for B2B and B2C Rails applications.",
+        "Modernized legacy Rails estates at Medical Mutual of Ohio and 3M.",
+        "Introduced Kubernetes and blue-green deployment patterns.",
+        "Supported Best Buy AWS/Kubernetes migrations and integrations with Salesforce, HubSpot, and NetSuite."
+      ],
+      "impact": "Reduced release risk and improved delivery quality across enterprise Rails systems.",
+      "interview_angle": "Brian is not scared of old Rails. He knows how to modernize without lighting the business on fire."
+    },
+    {
+      "name": "Take the Interview",
+      "themes": ["startup", "rails", "leadership", "product_engineering"],
+      "summary": "Helped scale an HR-tech company from seed stage through Series B.",
+      "context": "Video interviewing needed reliable backend systems, analytics, mobile support, and a remote engineering team.",
+      "role": "Lead software engineer.",
+      "contributions": [
+        "Architected Rails backend systems for synchronous and asynchronous video interviewing.",
+        "Supported native iOS and Android applications.",
+        "Built a fully remote team of 15 across engineering, design, and QA."
+      ],
+      "impact": "Helped the company grow from seed stage through Series B.",
+      "interview_angle": "Brian has been building remote teams and video workflow software since before everyone had a take about it."
+    }
+  ],
+  "stories": {
+    "ownership": "Brian's ownership story is iCouch: he did not just write Rails code. He founded the company, built the product, handled customer development, support, sales, product direction, and engineering, and kept the system credible in a trust-critical mental health domain. That is ownership with no convenient boundary line.",
+    "ambiguity": "At Apple, Brian worked on AI/ML human evaluation tooling where the work was not just 'build a screen.' The problem included scoring workflows, performance, human review, data-heavy UX, and onboarding. He turned a messy AI operations problem into Rails tooling, RAG search, and usable internal workflows.",
+    "leadership": "Brian's leadership shows up in several modes: managing engineers at Beyond Finance, leading source-control modernization and build infrastructure at Apple, leading a greenfield government benefits platform for Maryland, and building remote teams at Take the Interview. He can lead through architecture, product clarity, and delivery habits.",
+    "failure": "The career data does not include a detailed failure story. That is a great thing to ask Brian directly in an interview, especially because his founder background should produce a better answer than a rehearsed corporate fable.",
+    "ai": "Brian's AI story is practical rather than buzzword-heavy. He built Rails software for Apple's AI/ML human evaluation platform, improved scoring workflows, supported high-visibility services, and built a Rails-based RAG application for documentation search and onboarding. He understands evals, human review, internal tools, and the systems around models.",
+    "healthcare": "Brian founded iCouch in 2010, building browser-based online therapy workflows before telehealth became obvious. He built scheduling, payments, clinician workflows, and secure peer-to-peer video/chat in a privacy-sensitive mental health context. That gives him unusually early product and engineering scar tissue in healthcare.",
+    "platform": "Brian's platform story is strongest at Apple: he led SVN-to-GitHub modernization across major creative apps, built Ruby CI/CD orchestration, modified distributed compilation infrastructure for Swift and Objective-C, and helped cut build times by 90%. That is platform work with visible leverage.",
+    "conflict": "The career data does not include a specific conflict story. That is a great interview question for Brian, especially around stakeholder-heavy work at Maryland, Apple, or Beyond Finance.",
+    "technical_depth": "Brian's technical depth is Rails plus systems leverage: modern Rails, PostgreSQL, internal APIs, async services, CI/CD, Kubernetes, AWS, RAG, React micro-frontends, data-heavy UX, and distributed build infrastructure. He is strongest where product, platform, and practical architecture meet."
+  },
+  "role_summaries": {
+    "rails": "Brian is a senior Rails engineer and product/platform leader with deep Ruby on Rails experience across startups, Apple, fintech, government benefits, healthcare, insurance, and enterprise modernization. He has modernized legacy Rails estates, built greenfield Rails products, shipped internal APIs and async services, and used Rails where reliability, integration, and speed all mattered.",
+    "ai_platform": "Brian is a strong fit for AI platform roles because his AI work is grounded in real tooling: Apple's AI/ML human evaluation platform, Rails-based scoring workflows, RAG documentation search, onboarding tools, React data surfaces, and practical experience with LLM and agentic AI workflows. He understands that AI systems need evals, human review, retrieval, product sense, and boring reliability.",
+    "product_engineering": "Brian is a product engineering lead who can turn ambiguous workflows into usable software. iCouch, Maryland Paid Family and Medical Leave, Apple internal tools, and Beyond Finance all show the same pattern: understand the domain, shape the roadmap, build the system, and keep users and operations in view.",
+    "vp_platform": "Brian's VP/platform case is strongest around Apple developer productivity, CI/CD, build infrastructure, source-control modernization, Kubernetes-based distributed compilation, and cross-functional leadership. He has led teams, managed roadmaps, built remote teams, and improved developer velocity in high-stakes environments.",
+    "healthcare": "Brian has unusually early healthcare and mental health product experience. He founded iCouch in 2010, built privacy-sensitive online therapy workflows, integrated secure peer-to-peer video/chat, handled scheduling and payments, and later worked in regulated environments including insurance, fintech, and government benefits.",
+    "startup": "Brian is founder-shaped: he built iCouch from concept to working platform, owned product and engineering, handled customers and sales, and later helped Take the Interview scale from seed stage through Series B. He is comfortable where the job is not neatly boxed.",
+    "general": "Brian Dear is a senior Rails, product, platform, and AI engineering leader with experience across Apple, iCouch, Beyond Finance, Maryland Department of Labor, enterprise Rails consulting, AI/ML human evaluation workflows, RAG, CI/CD, regulated systems, internal tools, and startup leadership. The short version: he can build the product, modernize the platform, lead the team, and explain why it matters."
+  },
+  "keywords": {
+    "rails": [
+      "rails",
+      "ruby",
+      "postgresql",
+      "monolith",
+      "legacy",
+      "modernization",
+      "api",
+      "hotwire"
+    ],
+    "ai_platform": [
+      "ai",
+      "ml",
+      "llm",
+      "rag",
+      "eval",
+      "evaluation",
+      "human review",
+      "model",
+      "agent",
+      "mcp",
+      "retrieval"
+    ],
+    "product_engineering": [
+      "product",
+      "ux",
+      "user",
+      "workflow",
+      "roadmap",
+      "requirements",
+      "analytics",
+      "b2b",
+      "b2c"
+    ],
+    "vp_platform": [
+      "platform",
+      "director",
+      "vp",
+      "leadership",
+      "architecture",
+      "roadmap",
+      "developer productivity",
+      "ci/cd",
+      "kubernetes",
+      "release"
+    ],
+    "healthcare": [
+      "healthcare",
+      "therapy",
+      "mental health",
+      "patient",
+      "provider",
+      "clinical",
+      "hipaa",
+      "privacy",
+      "telehealth"
+    ],
+    "startup": [
+      "startup",
+      "founder",
+      "seed",
+      "series b",
+      "0 to 1",
+      "customer development",
+      "operator"
+    ],
+    "regulated_systems": [
+      "regulated",
+      "compliance",
+      "fintech",
+      "insurance",
+      "government",
+      "audit",
+      "login.gov",
+      "financial"
+    ],
+    "developer_productivity": [
+      "ci",
+      "cd",
+      "build",
+      "release",
+      "github",
+      "svn",
+      "compilation",
+      "developer velocity",
+      "devops"
+    ]
+  }
+}

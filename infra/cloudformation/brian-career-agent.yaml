@@ -1,0 +1,593 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Brian Dear Career Agent runtime infrastructure.
+
+Parameters:
+  AppName:
+    Type: String
+    Default: brian-dear-career-mcp
+  EnvironmentName:
+    Type: String
+    Default: prod
+  ContainerImageUri:
+    Type: String
+    Description: Fully qualified ECR image URI to run in App Runner.
+  DomainName:
+    Type: String
+    Default: www.briandear.ai
+  ApexDomainName:
+    Type: String
+    Default: briandear.ai
+    Description: Optional apex domain that should permanently redirect to DomainName.
+  HostedZoneId:
+    Type: String
+    Default: ""
+    Description: Optional Route 53 hosted zone ID. Leave blank to manage DNS outside this stack.
+  CertificateArn:
+    Type: String
+    Default: ""
+    Description: Optional ACM certificate ARN in us-east-1 for the CloudFront alias.
+  BedrockBaseUrl:
+    Type: String
+    Default: https://bedrock-mantle.us-east-1.api.aws/v1
+  BedrockModel:
+    Type: String
+    Default: openai.gpt-oss-20b
+  BedrockApiKeySecretArn:
+    Type: String
+    Description: Secrets Manager secret ARN containing BEDROCK_API_KEY.
+  SlackBotTokenSecretArn:
+    Type: String
+    Description: Secrets Manager secret ARN containing SLACK_BOT_TOKEN.
+  SlackSigningSecretSecretArn:
+    Type: String
+    Description: Secrets Manager secret ARN containing SLACK_SIGNING_SECRET.
+  SlackBrianUserIdSecretArn:
+    Type: String
+    Description: Secrets Manager secret ARN containing SLACK_BRIAN_USER_ID.
+  SlackUserLogChannelIdSecretArn:
+    Type: String
+    Description: Secrets Manager secret ARN containing SLACK_USER_LOG_CHANNEL_ID.
+  SlackHumanEvalChannelIdSecretArn:
+    Type: String
+    Description: Secrets Manager secret ARN containing SLACK_HUMAN_EVAL_CHANNEL_ID.
+  SlackMockInterviewChannelIdSecretArn:
+    Type: String
+    Description: Secrets Manager secret ARN containing SLACK_MOCK_INTERVIEW_CHANNEL_ID.
+  SlackInterviewRequestChannelIdSecretArn:
+    Type: String
+    Description: Secrets Manager secret ARN containing SLACK_INTERVIEW_REQUEST_CHANNEL_ID.
+  AdminTokenSecretArn:
+    Type: String
+    Description: Secrets Manager secret ARN containing ADMIN_TOKEN.
+  OriginVerifyHeaderValue:
+    Type: String
+    NoEcho: true
+    MinLength: 24
+    Description: Shared CloudFront-to-App Runner header value used to reject direct origin traffic.
+  EnableWaf:
+    Type: String
+    Default: "true"
+    AllowedValues: ["true", "false"]
+  WafRateLimit:
+    Type: Number
+    Default: 1200
+    Description: Maximum requests from one IP over the AWS WAF five-minute evaluation window.
+
+Conditions:
+  UseCustomDomain: !Not [!Equals [!Ref CertificateArn, ""]]
+  UseApexRedirect: !And
+    - !Condition UseCustomDomain
+    - !Not [!Equals [!Ref ApexDomainName, ""]]
+  WafEnabled: !Equals [!Ref EnableWaf, "true"]
+  CreateRoute53Record: !And
+    - !Condition UseCustomDomain
+    - !Not [!Equals [!Ref HostedZoneId, ""]]
+
+Resources:
+  BrainTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${AppName}-brain-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      DeletionProtectionEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: entityType
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: entityType-createdAt-index
+          KeySchema:
+            - AttributeName: entityType
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+  AsyncDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${AppName}-${EnvironmentName}-async-dlq"
+      MessageRetentionPeriod: 1209600
+      SqsManagedSseEnabled: true
+
+  AsyncQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${AppName}-${EnvironmentName}-async"
+      ReceiveMessageWaitTimeSeconds: 20
+      VisibilityTimeout: 120
+      MessageRetentionPeriod: 345600
+      SqsManagedSseEnabled: true
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt AsyncDeadLetterQueue.Arn
+        maxReceiveCount: 4
+
+  AppRunnerEcrAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AppName}-${EnvironmentName}-apprunner-ecr"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: build.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+
+  AppRunnerInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AppName}-${EnvironmentName}-apprunner-instance"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: tasks.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: runtime-access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource:
+                  - !Ref BedrockApiKeySecretArn
+                  - !Ref SlackBotTokenSecretArn
+                  - !Ref SlackSigningSecretSecretArn
+                  - !Ref SlackBrianUserIdSecretArn
+                  - !Ref SlackUserLogChannelIdSecretArn
+                  - !Ref SlackHumanEvalChannelIdSecretArn
+                  - !Ref SlackMockInterviewChannelIdSecretArn
+                  - !Ref SlackInterviewRequestChannelIdSecretArn
+                  - !Ref AdminTokenSecretArn
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                Resource:
+                  - !GetAtt BrainTable.Arn
+                  - !Sub "${BrainTable.Arn}/index/*"
+              - Effect: Allow
+                Action:
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                  - sqs:ReceiveMessage
+                  - sqs:SendMessage
+                Resource: !GetAtt AsyncQueue.Arn
+
+  AppRunnerAutoScaling:
+    Type: AWS::AppRunner::AutoScalingConfiguration
+    Properties:
+      AutoScalingConfigurationName: !Sub "${AppName}-${EnvironmentName}-autoscaling"
+      MinSize: 1
+      MaxSize: 3
+      MaxConcurrency: 60
+
+  WebService:
+    Type: AWS::AppRunner::Service
+    Properties:
+      ServiceName: !Sub "${AppName}-${EnvironmentName}"
+      AutoScalingConfigurationArn: !Ref AppRunnerAutoScaling
+      HealthCheckConfiguration:
+        Protocol: HTTP
+        Path: /healthz
+        Interval: 10
+        Timeout: 5
+        HealthyThreshold: 1
+        UnhealthyThreshold: 5
+      InstanceConfiguration:
+        Cpu: 0.25 vCPU
+        Memory: 0.5 GB
+        InstanceRoleArn: !GetAtt AppRunnerInstanceRole.Arn
+      SourceConfiguration:
+        AutoDeploymentsEnabled: false
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AppRunnerEcrAccessRole.Arn
+        ImageRepository:
+          ImageIdentifier: !Ref ContainerImageUri
+          ImageRepositoryType: ECR
+          ImageConfiguration:
+            Port: "8080"
+            RuntimeEnvironmentVariables:
+              - Name: NODE_ENV
+                Value: production
+              - Name: PORT
+                Value: "8080"
+              - Name: APP_BASE_URL
+                Value: !Sub "https://${DomainName}"
+              - Name: CANONICAL_HOST
+                Value: !Ref DomainName
+              - Name: APEX_HOST
+                Value: !Ref ApexDomainName
+              - Name: CAREER_AI_PROVIDER
+                Value: bedrock
+              - Name: BEDROCK_BASE_URL
+                Value: !Ref BedrockBaseUrl
+              - Name: BEDROCK_MODEL
+                Value: !Ref BedrockModel
+              - Name: BEDROCK_TIMEOUT_MS
+                Value: "15000"
+              - Name: COMPATIBLE_MAX_TOKENS
+                Value: "500"
+              - Name: BRAIN_STORE
+                Value: dynamodb
+              - Name: BRAIN_TABLE_NAME
+                Value: !Ref BrainTable
+              - Name: BRAIN_ENTITY_INDEX_NAME
+                Value: entityType-createdAt-index
+              - Name: ASYNC_QUEUE_URL
+                Value: !Ref AsyncQueue
+              - Name: ASYNC_WORKER_ENABLED
+                Value: "true"
+              - Name: PDF_GENERATION_TIMEOUT_MS
+                Value: "12000"
+              - Name: ORIGIN_SHARED_SECRET
+                Value: !Ref OriginVerifyHeaderValue
+            RuntimeEnvironmentSecrets:
+              - Name: BEDROCK_API_KEY
+                Value: !Ref BedrockApiKeySecretArn
+              - Name: SLACK_BOT_TOKEN
+                Value: !Ref SlackBotTokenSecretArn
+              - Name: SLACK_SIGNING_SECRET
+                Value: !Ref SlackSigningSecretSecretArn
+              - Name: SLACK_BRIAN_USER_ID
+                Value: !Ref SlackBrianUserIdSecretArn
+              - Name: SLACK_USER_LOG_CHANNEL_ID
+                Value: !Ref SlackUserLogChannelIdSecretArn
+              - Name: SLACK_HUMAN_EVAL_CHANNEL_ID
+                Value: !Ref SlackHumanEvalChannelIdSecretArn
+              - Name: SLACK_MOCK_INTERVIEW_CHANNEL_ID
+                Value: !Ref SlackMockInterviewChannelIdSecretArn
+              - Name: SLACK_INTERVIEW_REQUEST_CHANNEL_ID
+                Value: !Ref SlackInterviewRequestChannelIdSecretArn
+              - Name: ADMIN_TOKEN
+                Value: !Ref AdminTokenSecretArn
+
+  SecurityHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub "${AppName}-${EnvironmentName}-security-headers"
+        SecurityHeadersConfig:
+          ContentTypeOptions:
+            Override: true
+          FrameOptions:
+            FrameOption: DENY
+            Override: true
+          ReferrerPolicy:
+            ReferrerPolicy: strict-origin-when-cross-origin
+            Override: true
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 31536000
+            IncludeSubdomains: true
+            Override: true
+            Preload: true
+          XSSProtection:
+            ModeBlock: true
+            Override: true
+            Protection: true
+
+  WebAcl:
+    Type: AWS::WAFv2::WebACL
+    Condition: WafEnabled
+    Properties:
+      Name: !Sub "${AppName}-${EnvironmentName}-web-acl"
+      Scope: CLOUDFRONT
+      DefaultAction:
+        Allow: {}
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: !Sub "${AppName}-${EnvironmentName}-web-acl"
+        SampledRequestsEnabled: true
+      Rules:
+        - Name: rate-limit
+          Priority: 0
+          Action:
+            Block: {}
+          Statement:
+            RateBasedStatement:
+              AggregateKeyType: IP
+              Limit: !Ref WafRateLimit
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub "${AppName}-${EnvironmentName}-rate-limit"
+            SampledRequestsEnabled: true
+        - Name: aws-common-rules
+          Priority: 1
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesCommonRuleSet
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub "${AppName}-${EnvironmentName}-common"
+            SampledRequestsEnabled: true
+        - Name: aws-known-bad-inputs
+          Priority: 2
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub "${AppName}-${EnvironmentName}-known-bad-inputs"
+            SampledRequestsEnabled: true
+
+  CloudFrontLogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AppName}-${EnvironmentName}-cloudfront-logs-${AWS::AccountId}-${AWS::Region}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-cloudfront-logs
+            Status: Enabled
+            ExpirationInDays: 90
+
+  ApexRedirectFunction:
+    Type: AWS::CloudFront::Function
+    Condition: UseApexRedirect
+    Properties:
+      Name: !Sub "${AppName}-${EnvironmentName}-apex-redirect"
+      AutoPublish: true
+      FunctionConfig:
+        Comment: !Sub "Permanently redirect ${ApexDomainName} to ${DomainName}"
+        Runtime: cloudfront-js-2.0
+      FunctionCode: !Sub |
+        function handler(event) {
+          var request = event.request;
+          var host = request.headers.host && request.headers.host.value;
+          if (host === "${ApexDomainName}") {
+            var query = request.querystring && Object.keys(request.querystring).length > 0
+              ? "?" + Object.keys(request.querystring).map(function(key) {
+                  var value = request.querystring[key].value;
+                  return value === "" ? key : key + "=" + value;
+                }).join("&")
+              : "";
+            return {
+              statusCode: 301,
+              statusDescription: "Moved Permanently",
+              headers: {
+                location: { value: "https://${DomainName}" + request.uri + query }
+              }
+            };
+          }
+          return request;
+        }
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub "${AppName} ${EnvironmentName}"
+        HttpVersion: http2and3
+        PriceClass: PriceClass_100
+        Logging:
+          Bucket: !GetAtt CloudFrontLogsBucket.DomainName
+          IncludeCookies: false
+          Prefix: cloudfront/
+        WebACLId: !If
+          - WafEnabled
+          - !GetAtt WebAcl.Arn
+          - !Ref AWS::NoValue
+        Aliases: !If
+          - UseCustomDomain
+          - !If
+            - UseApexRedirect
+            - - !Ref DomainName
+              - !Ref ApexDomainName
+            - - !Ref DomainName
+          - !Ref AWS::NoValue
+        ViewerCertificate: !If
+          - UseCustomDomain
+          - AcmCertificateArn: !Ref CertificateArn
+            MinimumProtocolVersion: TLSv1.2_2021
+            SslSupportMethod: sni-only
+          - CloudFrontDefaultCertificate: true
+        Origins:
+          - Id: AppRunnerOrigin
+            DomainName: !GetAtt WebService.ServiceUrl
+            OriginCustomHeaders:
+              - HeaderName: X-Origin-Verify
+                HeaderValue: !Ref OriginVerifyHeaderValue
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1.2
+        DefaultCacheBehavior:
+          TargetOriginId: AppRunnerOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+          CachedMethods: [GET, HEAD, OPTIONS]
+          Compress: true
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+          OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+          ResponseHeadersPolicyId: !Ref SecurityHeadersPolicy
+          FunctionAssociations: !If
+            - UseApexRedirect
+            - - EventType: viewer-request
+                FunctionARN: !GetAtt ApexRedirectFunction.FunctionARN
+            - !Ref AWS::NoValue
+        CacheBehaviors:
+          - PathPattern: /assets/*
+            TargetOriginId: AppRunnerOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD, OPTIONS]
+            Compress: true
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+            ResponseHeadersPolicyId: !Ref SecurityHeadersPolicy
+            FunctionAssociations: !If
+              - UseApexRedirect
+              - - EventType: viewer-request
+                  FunctionARN: !GetAtt ApexRedirectFunction.FunctionARN
+              - !Ref AWS::NoValue
+          - PathPattern: /app.js
+            TargetOriginId: AppRunnerOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD, OPTIONS]
+            Compress: true
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+            ResponseHeadersPolicyId: !Ref SecurityHeadersPolicy
+            FunctionAssociations: !If
+              - UseApexRedirect
+              - - EventType: viewer-request
+                  FunctionARN: !GetAtt ApexRedirectFunction.FunctionARN
+              - !Ref AWS::NoValue
+          - PathPattern: /styles.css
+            TargetOriginId: AppRunnerOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD, OPTIONS]
+            Compress: true
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+            ResponseHeadersPolicyId: !Ref SecurityHeadersPolicy
+            FunctionAssociations: !If
+              - UseApexRedirect
+              - - EventType: viewer-request
+                  FunctionARN: !GetAtt ApexRedirectFunction.FunctionARN
+              - !Ref AWS::NoValue
+          - PathPattern: /api/*
+            TargetOriginId: AppRunnerOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+            CachedMethods: [GET, HEAD, OPTIONS]
+            Compress: true
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+            ResponseHeadersPolicyId: !Ref SecurityHeadersPolicy
+            FunctionAssociations: !If
+              - UseApexRedirect
+              - - EventType: viewer-request
+                  FunctionARN: !GetAtt ApexRedirectFunction.FunctionARN
+              - !Ref AWS::NoValue
+          - PathPattern: /slack/*
+            TargetOriginId: AppRunnerOrigin
+            ViewerProtocolPolicy: https-only
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+            CachedMethods: [GET, HEAD, OPTIONS]
+            Compress: true
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+            ResponseHeadersPolicyId: !Ref SecurityHeadersPolicy
+            FunctionAssociations: !If
+              - UseApexRedirect
+              - - EventType: viewer-request
+                  FunctionARN: !GetAtt ApexRedirectFunction.FunctionARN
+              - !Ref AWS::NoValue
+
+  DomainAliasRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: CreateRoute53Record
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt Distribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2
+
+  ApexAliasRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: CreateRoute53Record
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref ApexDomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt Distribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2
+
+Outputs:
+  AppRunnerServiceUrl:
+    Value: !Sub "https://${WebService.ServiceUrl}"
+  CloudFrontDomainName:
+    Value: !GetAtt Distribution.DomainName
+  PublicUrl:
+    Value:
+      !If [
+        UseCustomDomain,
+        !Sub "https://${DomainName}",
+        !Sub "https://${Distribution.DomainName}",
+      ]
+  AsyncQueueUrl:
+    Value: !Ref AsyncQueue
+  BrainTableName:
+    Value: !Ref BrainTable
+  SlackEventsUrl:
+    Value:
+      !If [
+        UseCustomDomain,
+        !Sub "https://${DomainName}/slack/events",
+        !Sub "https://${Distribution.DomainName}/slack/events",
+      ]
+  SlackInteractivityUrl:
+    Value:
+      !If [
+        UseCustomDomain,
+        !Sub "https://${DomainName}/slack/actions",
+        !Sub "https://${Distribution.DomainName}/slack/actions",
+      ]
+  SlackCommandsUrl:
+    Value:
+      !If [
+        UseCustomDomain,
+        !Sub "https://${DomainName}/slack/commands",
+        !Sub "https://${Distribution.DomainName}/slack/commands",
+      ]

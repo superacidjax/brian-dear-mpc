@@ -1,0 +1,9 @@
+node_modules/
+dist/
+output/
+tmp/
+.venv-aws/
+.env
+.DS_Store
+npm-debug.log*
+pnpm-debug.log*

@@ -1,0 +1,63 @@
+{
+  "name": "brian-dear-career-mcp",
+  "version": "0.1.0",
+  "description": "A recruiter-facing MCP server for querying Brian Dear's career data.",
+  "type": "module",
+  "bin": {
+    "brian-dear-career-mcp": "./dist/server.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev:mcp": "tsc && node dist/server.js",
+    "dev:mcp:ollama": "tsc && CAREER_AI_PROVIDER=ollama OLLAMA_MODEL=qwen3:4b CAREER_AI_TIMEOUT_MS=30000 node dist/server.js",
+    "dev:web": "tsc && node dist/web.js",
+    "dev:web:ollama": "tsc && CAREER_AI_PROVIDER=ollama OLLAMA_MODEL=qwen3:4b CAREER_AI_TIMEOUT_MS=30000 node dist/web.js",
+    "dev:web:bedrock": "tsc && CAREER_AI_PROVIDER=bedrock BEDROCK_TIMEOUT_MS=15000 node dist/web.js",
+    "demo": "tsc && node dist/cli.js demo",
+    "demo:ollama": "tsc && CAREER_AI_PROVIDER=ollama OLLAMA_MODEL=qwen3:4b CAREER_AI_TIMEOUT_MS=30000 node dist/cli.js demo",
+    "ask": "tsc && node dist/cli.js ask",
+    "ask:ollama": "tsc && CAREER_AI_PROVIDER=ollama OLLAMA_MODEL=qwen3:4b CAREER_AI_TIMEOUT_MS=30000 node dist/cli.js ask",
+    "ask:bedrock": "tsc && CAREER_AI_PROVIDER=bedrock BEDROCK_TIMEOUT_MS=15000 node dist/cli.js ask",
+    "worker": "tsc && node dist/worker.js",
+    "test:job-match": "tsc && node dist/jobMatchRegression.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md,yaml,yml,css,html}\" --ignore-path .gitignore"
+  },
+  "keywords": [
+    "mcp",
+    "resume",
+    "recruiting",
+    "rails",
+    "ai-platform",
+    "career"
+  ],
+  "author": "Brian Dear",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1075.0",
+    "@aws-sdk/client-sqs": "^3.1075.0",
+    "@aws-sdk/lib-dynamodb": "^3.1075.0",
+    "@modelcontextprotocol/sdk": "^1.15.1",
+    "compression": "^1.8.1",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
+    "node-html-parser": "^8.0.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/compression": "^1.8.1",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.10",
+    "@types/supertest": "^7.2.0",
+    "eslint": "^10.6.0",
+    "prettier": "^3.9.1",
+    "supertest": "^7.2.2",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.62.0",
+    "vitest": "^4.1.9"
+  }
+}
